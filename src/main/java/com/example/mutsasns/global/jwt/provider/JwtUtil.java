@@ -1,10 +1,10 @@
 package com.example.mutsasns.global.jwt.provider;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
+import com.example.mutsasns.global.exception.CustomException;
+import com.example.mutsasns.global.exception.ErrorCode;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,11 +34,19 @@ public class JwtUtil {
             jwtParser.parseClaimsJws(token);
             log.info("validate success");
             return true;
-        } catch (JwtException e) {
-            log.warn(e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.warn("expired jwt presented");
+            throw new CustomException(ErrorCode.EXPIRED_JWT);
+        } catch (UnsupportedJwtException e) {
+            log.warn("unsupported jwt");
+            throw new CustomException(ErrorCode.UNSUPPORTED_JWT);
+        } catch (SignatureException | MalformedJwtException e) {
+            log.warn("malformed jwt");
+            throw new CustomException(ErrorCode.INVALID_JWT);
+        } catch (IllegalArgumentException e) {
+            log.warn("illegal argument");
+            throw new CustomException(ErrorCode.ILLEGAL_ARGUMENT_JWT);
         }
-
-        return false;
     }
 
     public Claims parseClaims(String token) {
