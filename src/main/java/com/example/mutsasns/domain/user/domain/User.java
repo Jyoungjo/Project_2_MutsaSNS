@@ -1,5 +1,6 @@
 package com.example.mutsasns.domain.user.domain;
 
+import com.example.mutsasns.domain.user.dto.UserUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,4 +22,10 @@ public class User {
     private String email;
 
     private String phone;
+
+    public void updateInfo(UserUpdateRequestDto dto) {
+        this.password = dto.getPassword();
+        this.email = dto.getEmail();
+        this.phone = dto.getPhone();
+    }
 }

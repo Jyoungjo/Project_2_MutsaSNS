@@ -3,6 +3,7 @@ package com.example.mutsasns.global.config;
 import com.example.mutsasns.domain.user.service.JpaUserDetailsManager;
 import com.example.mutsasns.global.filter.JwtAuthorizationFilter;
 import com.example.mutsasns.global.filter.JwtAuthenticationFilter;
+import com.example.mutsasns.global.jwt.entrypoint.CustomAuthenticationEntryPoint;
 import com.example.mutsasns.global.jwt.provider.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -34,8 +35,11 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests(auth ->
                 auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/user/login", "/api/user/register").permitAll()
+                        .anyRequest().authenticated()
         );
+
+        http.exceptionHandling(ex -> ex.authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         http.addFilterBefore(authorizationFilter(), JwtAuthenticationFilter.class)
             .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
