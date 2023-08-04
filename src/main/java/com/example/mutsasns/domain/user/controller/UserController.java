@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
 
