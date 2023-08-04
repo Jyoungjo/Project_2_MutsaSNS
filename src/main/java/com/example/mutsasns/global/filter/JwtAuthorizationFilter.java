@@ -31,20 +31,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String tokenValue = jwtUtil.getJwtFromHeader(request);
 
         try {
-            if (StringUtils.hasText(tokenValue)) {
-                if (!jwtUtil.validate(tokenValue)) {
-                    log.error("validate fail");
-                    return;
-                }
+            if (StringUtils.hasText(tokenValue) && jwtUtil.validate(tokenValue)) {
 
                 Claims claims = jwtUtil.parseClaims(tokenValue);
 
                 setAuthentication(claims.getSubject());
             }
         } catch (CustomException e) {
-            // TODO null 왜 뜨는지 공부해보기
-            log.warn(e.getMessage());
-//            request.setAttribute("exception", e.getErrorCode());
+            request.setAttribute("exception", e.getErrorCode());
         }
 
         filterChain.doFilter(request, response);
