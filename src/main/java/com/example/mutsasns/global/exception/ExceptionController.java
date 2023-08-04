@@ -13,7 +13,7 @@ public class ExceptionController {
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(ErrorResponseDto.builder()
                         .errorCode(e.getErrorCode().name())
-                        .message(e.getMessage())
+                        .message(e.getErrorCode().getMessage())
                         .build());
     }
 }

@@ -27,7 +27,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
-    // 한글 출력을 위해서 해줘야 하는 메소드
+    // 응답을 한글로 출력
     private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         log.error("{}: {}", errorCode.getStatus(), errorCode.getMessage());
 
@@ -35,6 +35,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         JSONObject responseJson = new JSONObject();
+        responseJson.put("errorCode", errorCode.name());
         responseJson.put("message", errorCode.getMessage());
 
         response.getWriter().print(responseJson);

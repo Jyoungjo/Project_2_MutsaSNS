@@ -19,7 +19,7 @@ public class JpaUserDetailsManager implements UserDetailsManager {
     private final UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("해당 유저 존재하지 않음."));
 
         return CustomUserDetails.fromEntity(user);
     }

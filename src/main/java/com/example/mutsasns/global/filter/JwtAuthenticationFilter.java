@@ -2,6 +2,7 @@ package com.example.mutsasns.global.filter;
 
 import com.example.mutsasns.domain.user.dto.CustomUserDetails;
 import com.example.mutsasns.domain.user.dto.LoginDto;
+import com.example.mutsasns.global.exception.ErrorCode;
 import com.example.mutsasns.global.jwt.provider.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -67,7 +68,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.setContentType("application/json;charset=UTF-8");
 
         Map<String, Object> result = new HashMap<>();
-        result.put("message", "해당 계정이 존재하지 않거나, 아이디 혹은 비밀번호가 일치하지 않습니다.");
+        result.put("errorCode", ErrorCode.USER_INCONSISTENT_USERNAME_PASSWORD.name());
+        result.put("message", ErrorCode.USER_INCONSISTENT_USERNAME_PASSWORD.getMessage());
 
         response.getWriter().write(objectMapper.writeValueAsString(result));
     }
