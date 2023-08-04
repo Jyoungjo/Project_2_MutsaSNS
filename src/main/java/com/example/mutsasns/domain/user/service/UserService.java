@@ -1,12 +1,16 @@
 package com.example.mutsasns.domain.user.service;
 
 import com.example.mutsasns.domain.user.domain.User;
+import com.example.mutsasns.domain.user.dto.CustomUserDetails;
+import com.example.mutsasns.domain.user.dto.RegisterDto;
 import com.example.mutsasns.domain.user.dto.UserUpdateRequestDto;
 import com.example.mutsasns.domain.user.repository.UserRepository;
 import com.example.mutsasns.global.exception.CustomException;
 import com.example.mutsasns.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,16 +22,34 @@ import java.nio.file.Path;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final UserDetailsManager manager;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+
+    public void registerUser(RegisterDto dto) {
+        if (!dto.getPassword().equals(dto.getPasswordCheck())) {
+            log.error("입력 비밀번호 불일치");
+            throw new CustomException(ErrorCode.USER_INCONSISTENT_PASSWORD);
+        }
+
+        manager.createUser(CustomUserDetails.builder()
+                .username(dto.getUsername())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .phone(dto.getPhone())
+                .email(dto.getEmail())
+                .build());
+    }
 
     public void updateUserInfo(Long userId, UserUpdateRequestDto dto, String username) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         checkAccount(user, username);
 
+        if (!user.getPassword().equals(dto.getPassword()) && !dto.getPassword().equals(dto.getPasswordCheck()))
+            throw new CustomException(ErrorCode.USER_INCONSISTENT_PASSWORD);
+
         user.updateInfo(dto);
         userRepository.save(user);
-        log.info("정보 변경 성공");
     }
 
     public void updateImg(Long userId, MultipartFile image, String username) {
@@ -58,7 +80,6 @@ public class UserService {
 
         user.setProfileImg(String.format("/static/%d/%s", userId, profileFilename));
         userRepository.save(user);
-        log.info("이미지 등록 성공");
     }
 
     // 인증 메소드

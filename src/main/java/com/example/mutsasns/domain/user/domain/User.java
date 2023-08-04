@@ -24,7 +24,6 @@ public class User {
     private String phone;
 
     public void updateInfo(UserUpdateRequestDto dto) {
-        this.password = dto.getPassword();
         this.email = dto.getEmail();
         this.phone = dto.getPhone();
     }
