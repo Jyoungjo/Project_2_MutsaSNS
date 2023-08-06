@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class RequestImageDto {
+public class ImageDto {
     private String imageName;
     private String imageUrl;
     private Long fileSize;

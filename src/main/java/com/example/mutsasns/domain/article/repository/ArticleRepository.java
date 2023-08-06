@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findAllByUserAndDeletedFalse(User user);
+
+    Article findByIdAndDeletedFalse(Long articleId);
 }

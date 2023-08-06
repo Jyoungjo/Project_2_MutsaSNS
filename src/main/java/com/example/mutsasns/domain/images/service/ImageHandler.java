@@ -1,8 +1,9 @@
 package com.example.mutsasns.domain.images.service;
 
 
+import com.example.mutsasns.domain.article.domain.Article;
 import com.example.mutsasns.domain.images.domain.ArticleImage;
-import com.example.mutsasns.domain.images.dto.RequestImageDto;
+import com.example.mutsasns.domain.images.dto.ImageDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -19,10 +20,12 @@ import java.util.UUID;
 
 @Slf4j
 @Component
-public class FileHandler {
+public class ImageHandler {
     public static final String DEFAULT_IMG_PATH = "src/main/resources/static/default_img.jpg";
 
-    public List<ArticleImage> parseFileInfo(List<MultipartFile> multipartFiles, String username) throws IOException {
+    public List<ArticleImage> parseFileInfo(
+            List<MultipartFile> multipartFiles, String username, Article article
+    ) throws IOException {
         // 반환할 파일 리스트
         List<ArticleImage> imageList = new ArrayList<>();
 
@@ -38,7 +41,8 @@ public class FileHandler {
             String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
 
             // 파일 저장할 세부 경로
-            String path = "feed" + File.separator + username + File.separator + currentDate;
+            String path = "feed" + File.separator + username
+                            + File.separator + currentDate + File.separator + article.getId();
             File file = new File(path);
 
             // 디렉토리 존재 여부 체크
@@ -70,7 +74,7 @@ public class FileHandler {
                 String newFileName = uuid + originalFileExtension;
 
                 // 파일 DTO 생성
-                RequestImageDto imageDto = RequestImageDto.builder()
+                ImageDto imageDto = ImageDto.builder()
                         .imageName(multipartFile.getOriginalFilename())
                         .imageUrl(path + File.separator + newFileName)
                         .fileSize(multipartFile.getSize())
@@ -81,6 +85,9 @@ public class FileHandler {
                         imageDto.getImageName(),
                         imageDto.getImageUrl(),
                         imageDto.getFileSize());
+
+                // 게시글이 있는 상태라면 해당 변환한 이미지의 정보를 게시글에 저장
+                if (article.getId() != null) articleImage.setArticle(article);
 
                 imageList.add(articleImage);
 

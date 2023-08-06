@@ -14,7 +14,6 @@ import java.util.List;
 @Getter
 @Entity
 @SQLDelete(sql = "UPDATE article SET deleted = true WHERE id = ?")
-//@Where(clause = "deleted = false")
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,18 +26,17 @@ public class Article {
     private String title;
     private String content;
     private String thumbnail;
-    private Integer deleted;
+    private boolean deleted = Boolean.FALSE;
 
     @OneToMany(mappedBy = "article", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<ArticleImage> images = new ArrayList<>();
 
     @Builder
-    public Article(User user, String title, String content, String thumbnail, Integer deleted) {
+    public Article(User user, String title, String content, String thumbnail) {
         this.user = user;
         this.title = title;
         this.content = content;
         this.thumbnail = thumbnail;
-        this.deleted = deleted;
     }
 
     public void setThumbnail(String path) {
