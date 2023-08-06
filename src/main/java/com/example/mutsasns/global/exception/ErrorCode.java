@@ -15,6 +15,16 @@ public enum ErrorCode {
     USER_INCONSISTENT_PASSWORD(HttpStatus.UNAUTHORIZED, "입력하신 비밀번호가 일치하지 않습니다."),
     USER_INCONSISTENT_USERNAME_PASSWORD(HttpStatus.UNAUTHORIZED, "아이디 혹은 비밀번호가 일치하지 않습니다."),
 
+    // article 관련 에러
+    ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 피드를 찾을 수 없습니다."),
+    ARTICLE_DELETED(HttpStatus.NOT_FOUND, "삭제된 피드입니다."),
+    ARTICLE_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 피드가 없습니다."),
+
+    // article image 관련 에러
+    ARTICLE_IMAGE_UNSELECTED(HttpStatus.BAD_REQUEST, "이미지를 넣어주시기 바랍니다."),
+    ARTICLE_IMAGE_NOT_MATCH(HttpStatus.BAD_REQUEST, "해당 게시글의 이미지가 아닙니다."),
+    ARTICLE_IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이미지를 찾을 수 없습니다."),
+
     // token 관련 에러
     EXPIRED_JWT(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다. 다시 로그인 해주시기 바랍니다."),
     UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "지원되지 않는 토큰입니다. 다시 로그인 해주시기 바랍니다."),
