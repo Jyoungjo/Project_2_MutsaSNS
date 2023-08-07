@@ -25,6 +25,7 @@ public class LikeArticleService {
     private final ArticleRepository articleRepository;
     private final LikeArticleRepository likeRepository;
 
+    // 좋아요 관련 -> api/articles/{articleId}/like
     @Transactional
     public ResponseLikeDto pushLike(String username, Long articleId) {
         User user = userRepository.findByUsername(username)

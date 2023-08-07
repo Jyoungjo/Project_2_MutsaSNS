@@ -5,7 +5,6 @@ import com.example.mutsasns.domain.images.domain.ArticleImage;
 import com.example.mutsasns.domain.images.dto.ImageDto;
 import com.example.mutsasns.domain.images.repository.ArticleImageRepository;
 import com.example.mutsasns.global.exception.CustomException;
-import com.example.mutsasns.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mutsasns.global.exception.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,6 +25,7 @@ public class ArticleImageService {
     private final ArticleImageRepository imageRepository;
     private final ImageHandler imageHandler;
 
+    // 이미지 등록
     public void createImage(List<MultipartFile> multipartFiles, String username, Article article) throws IOException {
         List<ArticleImage> imageList = imageHandler.parseFileInfo(multipartFiles, username, article);
 
@@ -37,8 +39,9 @@ public class ArticleImageService {
         }
     }
 
+    // 이미지 단일 조회
     public ImageDto getImageById(Long imageId) {
-        ArticleImage image = imageRepository.findById(imageId).orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_IMAGE_NOT_FOUND));
+        ArticleImage image = imageRepository.findById(imageId).orElseThrow(() -> new CustomException(ARTICLE_IMAGE_NOT_FOUND));
 
         return ImageDto.builder()
                 .imageName(image.getImageName())
@@ -47,16 +50,19 @@ public class ArticleImageService {
                 .build();
     }
 
+    // 이미지 목록 조회
     public List<ArticleImage> getAllImagesByArticle(Long articleId) {
         return imageRepository.findAllByArticleId(articleId);
     }
 
+    // 이미지 삭제
     @Transactional
     public void deleteImage(Long imageId) {
-        ArticleImage image = imageRepository.findById(imageId).orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_IMAGE_NOT_FOUND));
+        ArticleImage image = imageRepository.findById(imageId).orElseThrow(() -> new CustomException(ARTICLE_IMAGE_NOT_FOUND));
         imageRepository.delete(image);
     }
 
+    // 이미지 수정 -> 기존 이미지를 삭제하거나 새로운 이미지를 추가하는 것까지 고려
     @Transactional
     public List<MultipartFile> updateImg(
             List<MultipartFile> requestImages,
@@ -116,6 +122,7 @@ public class ArticleImageService {
         return newImgList;
     }
 
+    // 삭제 시 DB와 서버 내의 이미지를 전부 삭제하는 메소드
     private void deleteServerAndDBImg(ArticleImage image) {
         // 서버 내의 사진 및 피드 아이디 폴더 먼저 삭제
         String path = image.getImageUrl();
