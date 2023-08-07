@@ -24,6 +24,7 @@ public class ResponseArticleDto {
     // 댓글들
     private List<ResponseCommentsDto> comments;
     // 좋아요
+    private Integer likeCount;
 
     public static ResponseArticleDto fromEntity(Article article) {
         ResponseArticleDto dto = new ResponseArticleDto();
@@ -34,11 +35,11 @@ public class ResponseArticleDto {
         dto.setImages(new ArrayList<>());
         dto.setComments(new ArrayList<>());
         dto.setContent(article.getContent());
+        dto.setLikeCount(article.getLikeCount());
 
         for (ArticleImage image : article.getImages()) {
             dto.getImages().add(ResponseImageDto.builder()
                     .id(image.getId())
-                    .articleId(image.getArticle().getId())
                     .imageName(image.getImageName())
                     .imageUrl(image.getImageUrl())
                     .build()
@@ -48,7 +49,6 @@ public class ResponseArticleDto {
         for (Comment comment : article.getComments()) {
             dto.getComments().add(ResponseCommentsDto.builder()
                     .id(comment.getId())
-                    .articleId(comment.getArticle().getId())
                     .username(comment.getUser().getUsername())
                     .content(comment.getContent())
                     .build()

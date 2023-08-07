@@ -12,6 +12,7 @@ public class ResponseArticleListDto {
     private String title;
     private String thumbnail;
     private String content;
+    private Integer likeCount;
 
     public static ResponseArticleListDto fromEntity(Article article) {
         return new ResponseArticleListDto(
@@ -19,7 +20,8 @@ public class ResponseArticleListDto {
                 article.getUser().getUsername(),
                 article.getTitle(),
                 article.getThumbnail(),
-                article.getContent()
+                article.getContent(),
+                article.getLikeCount()
         );
     }
 }

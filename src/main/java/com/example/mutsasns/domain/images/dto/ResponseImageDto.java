@@ -7,7 +7,6 @@ import lombok.Getter;
 @Builder
 public class ResponseImageDto {
     private Long id;
-    private Long articleId;
     private String imageName;
     private String imageUrl;
 }

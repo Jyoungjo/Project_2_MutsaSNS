@@ -28,6 +28,9 @@ public enum ErrorCode {
     INVALID_JWT(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다. 다시 로그인 해주시기 바랍니다."),
     ILLEGAL_ARGUMENT_JWT(HttpStatus.UNAUTHORIZED, "잘못된 토큰입니다. 다시 로그인 해주시기 바랍니다."),
 
+    // like 관련 에러
+    LIKE_NOT_PUSH_MY_ARTICLE(HttpStatus.CONFLICT, "자신이 올린 피드에는 좋아요를 누를 수 없습니다."),
+
     // 그 외
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
 
