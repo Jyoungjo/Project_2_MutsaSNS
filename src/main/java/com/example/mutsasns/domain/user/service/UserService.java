@@ -43,9 +43,9 @@ public class UserService {
     public void updateUserInfo(Long userId, UserUpdateRequestDto dto, String username) {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        checkAccount(user, username);
+        checkAccountForRegister(user, username, dto.getOldPassword());
 
-        if (!user.getPassword().equals(dto.getPassword()) && !dto.getPassword().equals(dto.getPasswordCheck()))
+        if (!dto.getNewPassword().equals(dto.getPasswordCheck()))
             throw new CustomException(ErrorCode.USER_INCONSISTENT_PASSWORD);
 
         user.updateInfo(dto);
@@ -82,7 +82,18 @@ public class UserService {
         userRepository.save(user);
     }
 
+    // TODO 회원 탈퇴 기능 구현
+
     // 인증 메소드
+    private void checkAccountForRegister(User user, String username, String oldPassword) {
+        // 다른 유저의 프로필을 수정할 수도 있기 때문에
+        // 현재 로그인 한 유저와 프로필 이미지를 등록할 유저의 username 비교
+        if (!user.getUsername().equals(username) || !user.getPassword().equals(oldPassword)) {
+            log.error("계정 확인 실패");
+            throw new CustomException(ErrorCode.USER_INCONSISTENT_USERNAME_PASSWORD);
+        }
+    }
+
     private void checkAccount(User user, String username) {
         // 다른 유저의 프로필을 수정할 수도 있기 때문에
         // 현재 로그인 한 유저와 프로필 이미지를 등록할 유저의 username 비교
