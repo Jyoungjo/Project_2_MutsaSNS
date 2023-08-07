@@ -1,5 +1,6 @@
 package com.example.mutsasns.domain.article.domain;
 
+import com.example.mutsasns.domain.comment.domain.Comment;
 import com.example.mutsasns.domain.images.domain.ArticleImage;
 import com.example.mutsasns.domain.user.domain.User;
 import jakarta.persistence.*;
@@ -30,6 +31,9 @@ public class Article {
 
     @OneToMany(mappedBy = "article", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<ArticleImage> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
     @Builder
     public Article(User user, String title, String content, String thumbnail) {

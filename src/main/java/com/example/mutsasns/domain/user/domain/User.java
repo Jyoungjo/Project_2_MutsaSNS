@@ -1,6 +1,7 @@
 package com.example.mutsasns.domain.user.domain;
 
 import com.example.mutsasns.domain.article.domain.Article;
+import com.example.mutsasns.domain.comment.domain.Comment;
 import com.example.mutsasns.domain.user.dto.UserUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -29,17 +30,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Article> articles;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+
     public void updateInfo(UserUpdateRequestDto dto) {
         this.email = dto.getEmail();
         this.phone = dto.getPhone();
-    }
-
-    // 매핑 관련
-    public void addArticle(Article article) {
-        if (!articles.contains(article)) articles.add(article);
-    }
-
-    public void deleteArticle(Article article) {
-        articles.remove(article);
     }
 }

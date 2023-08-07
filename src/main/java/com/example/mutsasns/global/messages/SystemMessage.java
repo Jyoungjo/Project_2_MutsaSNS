@@ -7,7 +7,6 @@ public class SystemMessage {
     public static final String REGISTER_USER_PROFILE = "프로필 등록 완료";
     public static final String REGISTER_ARTICLE = "피드가 등록되었습니다.";
     public static final String UPDATE_ARTICLE = "피드 수정이 완료되었습니다.";
-    public static final String DELETE_ARTICLE = "피드가 정상적으로 삭제되었습니다.";
-    public static final String REGISTER_ARTICLE_IMAGE = "이미지 등록이 완료되었습니다.";
-    public static final String DELETE_ARTICLE_IMAGE = "이미지 삭제가 완료되었습니다.";
+    public static final String REGISTER_COMMENT = "댓글이 등록되었습니다.";
+    public static final String UPDATE_COMMENT = "댓글 수정이 완료되었습니다.";
 }
