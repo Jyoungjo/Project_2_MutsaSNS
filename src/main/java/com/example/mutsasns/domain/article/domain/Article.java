@@ -1,6 +1,8 @@
 package com.example.mutsasns.domain.article.domain;
 
+import com.example.mutsasns.domain.comment.domain.Comment;
 import com.example.mutsasns.domain.images.domain.ArticleImage;
+import com.example.mutsasns.domain.like_article.domain.LikeArticle;
 import com.example.mutsasns.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,9 +29,16 @@ public class Article {
     private String content;
     private String thumbnail;
     private boolean deleted = Boolean.FALSE;
+    private Integer likeCount = 0;
 
     @OneToMany(mappedBy = "article", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<ArticleImage> images = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "article")
+    private List<LikeArticle> likeArticles;
 
     @Builder
     public Article(User user, String title, String content, String thumbnail) {
@@ -56,5 +65,13 @@ public class Article {
             // 게시글에 이미지를 저장한다.
             articleImage.setArticle(this);
         }
+    }
+
+    public void plusCount() {
+        this.likeCount += 1;
+    }
+
+    public void minusCount() {
+        this.likeCount -= 1;
     }
 }

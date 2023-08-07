@@ -94,18 +94,12 @@ public class ImageHandler {
                 // 업로드 한 파일 데이터를 지정한 파일에 저장
                 file = new File(absolutePath + path + File.separator + newFileName);
                 multipartFile.transferTo(file);
+
+                file.setWritable(true);
+                file.setReadable(true);
             }
         }
 
         return imageList;
-    }
-
-    public boolean isPossibleDelete(String path) {
-        if (path.contains("default-img")) return true;
-
-        String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-        File file = new File(absolutePath);
-
-        return file.delete();
     }
 }

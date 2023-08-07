@@ -1,13 +1,12 @@
 package com.example.mutsasns.domain.images.dto;
 
-import com.example.mutsasns.domain.images.domain.ArticleImage;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class ResponseImageDto {
-    private Long fileId;
-
-    public ResponseImageDto(ArticleImage articleImage) {
-        this.fileId = articleImage.getId();
-    }
+    private Long id;
+    private String imageName;
+    private String imageUrl;
 }
