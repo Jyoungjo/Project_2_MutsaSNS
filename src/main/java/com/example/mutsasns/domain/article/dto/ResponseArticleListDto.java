@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ResponseArticleListDto {
+    private Long id;
     private String username;
     private String title;
     private String thumbnail;
@@ -14,6 +15,7 @@ public class ResponseArticleListDto {
 
     public static ResponseArticleListDto fromEntity(Article article) {
         return new ResponseArticleListDto(
+                article.getId(),
                 article.getUser().getUsername(),
                 article.getTitle(),
                 article.getThumbnail(),

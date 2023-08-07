@@ -31,76 +31,50 @@ public class ArticleService {
     private final ArticleImageRepository imageRepository;
     private final ImageHandler imageHandler;
 
-    // 게시글 등록(이미지를 등록해서 글을 작성할수도 있지만 글만 올릴수도 있고, 이미지만 올릴수도 있다. -> /api/users/{userId}/articles
+    // 게시글 등록(이미지를 등록해서 글을 작성할수도 있지만 글만 올릴수도 있고, 이미지만 올릴수도 있다. -> /api/articles
     @Transactional
-    public void createArticle(List<MultipartFile> multipartFiles, RequestArticleDto dto, String username, Long userId) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        checkUser(username, user);
-
-//        Article article = Article.builder()
-//                .title(dto.getTitle())
-//                .content(dto.getContent())
-//                .user(user)
-//                .thumbnail(ImageHandler.DEFAULT_IMG_PATH)
-//                .build();
+    public Article createArticle(RequestArticleDto dto, String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Article article = new Article(
                 user, dto.getTitle(), dto.getContent(), ImageHandler.DEFAULT_IMG_PATH
         );
 
-        articleRepository.save(article);
-
-        List<ArticleImage> imageList = imageHandler.parseFileInfo(multipartFiles, username, article);
-
-        if (multipartFiles != null) {
-            for (ArticleImage image : imageList) {
-                article.addImage(imageRepository.save(image));
-            }
-            article.setThumbnail(imageList.get(0).getImageUrl());
-        }
+        return articleRepository.save(article);
     }
 
-    // 게시글 목록 조회 -> /api/users/{userId}/articles
-    public List<ResponseArticleListDto> readAllArticles(String username, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        checkUser(username, user);
-
-        List<Article> articleList = articleRepository.findAllByUserAndDeletedFalse(user);
-
-        if (articleList.isEmpty()) throw new CustomException(ErrorCode.ARTICLE_LIST_NOT_FOUND);
+    // 게시글 목록 조회 -> /api/articles
+    public List<ResponseArticleListDto> readAllArticles() {
+        List<Article> articleList = articleRepository.findAllByDeletedFalse();
 
         return articleList.stream().map(ResponseArticleListDto::fromEntity).toList();
     }
 
-    // 게시글 단일 조회 -> /api/users/{userId}/articles/{articleId}
-    public ResponseArticleDto readArticle(String username, Long userId, Long articleId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        checkUser(username, user);
+    // 게시글 단일 조회 -> /api/articles/{articleId}
+    public ResponseArticleDto readArticle(String username, Long articleId) {
+        if (!userRepository.existsByUsername(username)) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
-        Article article = articleRepository.findByIdAndDeletedFalse(articleId);
-
-        if (article == null) {
-            throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
-        }
+        Article article = articleRepository.findByIdAndDeletedFalse(articleId).orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
         // TODO 댓글, 좋아요 구현해서 코드 리팩토링
         return ResponseArticleDto.fromEntity(article);
     }
 
-    // 게시글 수정(수정 또한 이미지를 수정할수도 있고, 글만 수정할수도 있고, 둘다 수정이 가능하다) -> /api/users/{userId}/articles/{articleId}
+    // 게시글 수정(수정 또한 이미지를 수정할수도 있고, 글만 수정할수도 있고, 둘다 수정이 가능하다) -> /api/articles/{articleId}
     @Transactional
     public void updateArticle(
-            List<MultipartFile> multipartFiles, RequestArticleDto dto, String username, Long userId, Long articleId
+            List<MultipartFile> newImgList, RequestArticleDto dto, String username, Long articleId
     ) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        checkUser(username, user);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Article article = articleRepository.findByIdAndDeletedFalse(articleId).orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+        // 작성자가 맞는지 체크
+        checkAuthority(user, article);
 
-        List<ArticleImage> imageList = imageHandler.parseFileInfo(multipartFiles, username, article);
+        List<ArticleImage> addedImageList = imageHandler.parseFileInfo(newImgList, username, article);
 
-        if (imageList != null) {
-            imageRepository.saveAll(imageList);
+        if (addedImageList != null) {
+            imageRepository.saveAll(addedImageList);
         }
 
         article.update(dto.getTitle(), dto.getContent());
@@ -109,17 +83,18 @@ public class ArticleService {
 
     // 게시글 삭제 (soft delete -> deleted = true) -> /api/users/{userId}/articles/{articleId}
     @Transactional
-    public void deleteArticle(String username, Long userId, Long articleId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        checkUser(username, user);
+    public void deleteArticle(String username, Long articleId) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Article article = articleRepository.findByIdAndDeletedFalse(articleId).orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
 
-        Article article = articleRepository.findById(articleId).orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_FOUND));
+        checkAuthority(user, article);
+
         articleRepository.delete(article);
     }
 
     // 사용자와 토큰 내의 정보 일치 여부 체크 메소드
-    private void checkUser(String username, User user) {
-        if (!user.getUsername().equals(username)) {
+    private void checkAuthority(User user, Article article) {
+        if (!user.getUsername().equals(article.getUser().getUsername())) {
             throw new CustomException(ErrorCode.USER_INCONSISTENT_USERNAME_PASSWORD);
         }
     }
