@@ -31,6 +31,9 @@ public enum ErrorCode {
     // like 관련 에러
     LIKE_NOT_PUSH_MY_ARTICLE(HttpStatus.CONFLICT, "자신이 올린 피드에는 좋아요를 누를 수 없습니다."),
 
+    // follow 관련 에러
+    FOLLOW_NOT_YOUR_PROFILE(HttpStatus.CONFLICT, "나 자신을 팔로우 할 수 없습니다."),
+
     // 그 외
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
 

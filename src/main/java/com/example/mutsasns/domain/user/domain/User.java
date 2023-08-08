@@ -28,6 +28,10 @@ public class User {
 
     private String phone;
 
+    private Integer followerCount = 0;
+
+    private Integer followingCount = 0;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Article> articles;
 
@@ -40,5 +44,21 @@ public class User {
     public void updateInfo(RequestUserUpdateDto dto) {
         this.email = dto.getEmail();
         this.phone = dto.getPhone();
+    }
+
+    public void addFollower() {
+        this.followerCount += 1;
+    }
+
+    public void addFollowing() {
+        this.followingCount += 1;
+    }
+
+    public void cancelFollower() {
+        this.followerCount -= 1;
+    }
+
+    public void cancelFollowing() {
+        this.followingCount -= 1;
     }
 }

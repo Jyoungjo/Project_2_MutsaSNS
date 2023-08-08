@@ -6,17 +6,19 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 @Builder
 public class ResponseUserDto {
     private String username;
     private String profileImg;
+    private Integer followerCount;
+    private Integer followingCount;
 
     public static ResponseUserDto fromEntity(User user) {
-        ResponseUserDto dto = new ResponseUserDto();
-        dto.setUsername(user.getUsername());
-        dto.setProfileImg(user.getProfileImg());
-
-        return dto;
+        return new ResponseUserDto(
+                user.getUsername(),
+                user.getProfileImg(),
+                user.getFollowerCount(),
+                user.getFollowingCount()
+        );
     }
 }
