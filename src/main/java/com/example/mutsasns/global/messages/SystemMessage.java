@@ -9,4 +9,6 @@ public class SystemMessage {
     public static final String UPDATE_ARTICLE = "피드 수정이 완료되었습니다.";
     public static final String REGISTER_COMMENT = "댓글이 등록되었습니다.";
     public static final String UPDATE_COMMENT = "댓글 수정이 완료되었습니다.";
+    public static final String REGISTER_FRIEND_REQUEST = "친구 신청이 완료되었습니다.";
+    public static final String UPDATE_FRIEND_REQUEST = "상태가 변경되었습니다.";
 }
