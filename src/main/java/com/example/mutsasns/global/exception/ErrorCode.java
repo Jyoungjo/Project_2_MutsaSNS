@@ -40,6 +40,7 @@ public enum ErrorCode {
     FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "친구 신청 요청이 없습니다."),
     AUTHORITY_FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     FRIEND_REQUEST_ALREADY_PROCESSED(HttpStatus.CONFLICT, "이미 처리된 신청입니다."),
+    FRIEND_ALREADY_ACCEPT(HttpStatus.CONFLICT, "이미 친구 상태입니다."),
 
     // 그 외
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");

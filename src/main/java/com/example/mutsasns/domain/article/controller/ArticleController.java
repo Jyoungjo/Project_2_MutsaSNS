@@ -82,8 +82,17 @@ public class ArticleController {
 
     @GetMapping("/followers")
     public ResponseEntity<List<ResponseArticleListDto>> readAllFollowersArticles(
-            @RequestParam("username") String username
+            Authentication authentication
     ) {
+        String username = authentication.getName();
         return ResponseEntity.ok(articleService.readAllArticlesByFollower(username));
+    }
+
+    @GetMapping("/friends")
+    public ResponseEntity<List<ResponseArticleListDto>> readAllFriendsArticles(
+            Authentication authentication
+    ) {
+        String username = authentication.getName();
+        return ResponseEntity.ok(articleService.readAllArticlesByFriend(username));
     }
 }

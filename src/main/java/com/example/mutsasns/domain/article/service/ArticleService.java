@@ -7,6 +7,7 @@ import com.example.mutsasns.domain.article.dto.ResponseArticleListDto;
 import com.example.mutsasns.domain.article.repository.ArticleRepository;
 import com.example.mutsasns.domain.follow.domain.Follow;
 import com.example.mutsasns.domain.follow.repository.FollowRepository;
+import com.example.mutsasns.domain.friend.repository.FriendRepository;
 import com.example.mutsasns.domain.images.domain.ArticleImage;
 import com.example.mutsasns.domain.images.repository.ArticleImageRepository;
 import com.example.mutsasns.domain.images.service.ImageHandler;
@@ -35,6 +36,7 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final ArticleImageRepository imageRepository;
     private final FollowRepository followRepository;
+    private final FriendRepository friendRepository;
     private final ImageHandler imageHandler;
 
     // 게시글 등록(이미지를 등록해서 글을 작성할수도 있지만 글만 올릴수도 있고, 이미지만 올릴수도 있다. -> /api/articles
@@ -83,7 +85,18 @@ public class ArticleService {
         // 팔로워를 리스트에서 추출
         for (Follow follow : followList) followers.add(follow.getFollower());
 
-        List<Article> articleList = articleRepository.findAllByUserIn(followers);
+        List<Article> articleList = articleRepository.findAllByUserInOrderByIdDesc(followers);
+
+        return articleList.stream().map(ResponseArticleListDto::fromEntity).toList();
+    }
+
+    // 친구의 게시글 목록 조회
+    public List<ResponseArticleListDto> readAllArticlesByFriend(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        List<User> friends = friendRepository.findFriendsByUser(user);
+
+        List<Article> articleList = articleRepository.findAllByUserInOrderByIdDesc(friends);
 
         return articleList.stream().map(ResponseArticleListDto::fromEntity).toList();
     }

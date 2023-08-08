@@ -37,6 +37,10 @@ public class FriendService {
             throw new CustomException(FRIEND_ALREADY_REQUEST);
         }
 
+        if (friendRepository.existsFriendBetweenUsers(reqUser, resUser)) {
+            throw new CustomException(FRIEND_ALREADY_ACCEPT);
+        }
+
         Friend friend = new Friend(reqUser, resUser);
 
         friendRepository.save(friend);
