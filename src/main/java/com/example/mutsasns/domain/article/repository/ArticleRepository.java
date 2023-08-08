@@ -11,4 +11,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findAllByUserAndDeletedFalse(User user);
 
     Optional<Article> findByIdAndDeletedFalse(Long articleId);
+
+    List<Article> findAllByUserIn(List<User> userList);
 }

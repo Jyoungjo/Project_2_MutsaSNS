@@ -5,6 +5,8 @@ import com.example.mutsasns.domain.article.dto.RequestArticleDto;
 import com.example.mutsasns.domain.article.dto.ResponseArticleDto;
 import com.example.mutsasns.domain.article.dto.ResponseArticleListDto;
 import com.example.mutsasns.domain.article.repository.ArticleRepository;
+import com.example.mutsasns.domain.follow.domain.Follow;
+import com.example.mutsasns.domain.follow.repository.FollowRepository;
 import com.example.mutsasns.domain.images.domain.ArticleImage;
 import com.example.mutsasns.domain.images.repository.ArticleImageRepository;
 import com.example.mutsasns.domain.images.service.ImageHandler;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.mutsasns.domain.images.service.ImageHandler.*;
@@ -31,6 +34,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
     private final ArticleImageRepository imageRepository;
+    private final FollowRepository followRepository;
     private final ImageHandler imageHandler;
 
     // 게시글 등록(이미지를 등록해서 글을 작성할수도 있지만 글만 올릴수도 있고, 이미지만 올릴수도 있다. -> /api/articles
@@ -64,6 +68,24 @@ public class ArticleService {
 
         log.info("게시글 단일 조회 성공");
         return ResponseArticleDto.fromEntity(article);
+    }
+
+    // 팔로워의 게시글 목록 조회
+    public List<ResponseArticleListDto> readAllArticlesByFollower(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        // 팔로우 하고 있는 user 의 팔로워 리스트를 가져온다.
+        List<Follow> followList = followRepository.findAllByFollowing(user);
+
+        // 팔로워 리스트에서 팔로워들을 넣을 리스트를 새로 생성
+        List<User> followers = new ArrayList<>();
+
+        // 팔로워를 리스트에서 추출
+        for (Follow follow : followList) followers.add(follow.getFollower());
+
+        List<Article> articleList = articleRepository.findAllByUserIn(followers);
+
+        return articleList.stream().map(ResponseArticleListDto::fromEntity).toList();
     }
 
     // 게시글 수정(수정 또한 이미지를 수정할수도 있고, 글만 수정할수도 있고, 둘다 수정이 가능하다) -> /api/articles/{articleId}

@@ -79,4 +79,11 @@ public class ArticleController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/followers")
+    public ResponseEntity<List<ResponseArticleListDto>> readAllFollowersArticles(
+            @RequestParam("username") String username
+    ) {
+        return ResponseEntity.ok(articleService.readAllArticlesByFollower(username));
+    }
 }
