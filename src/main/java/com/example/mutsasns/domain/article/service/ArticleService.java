@@ -47,8 +47,10 @@ public class ArticleService {
     }
 
     // 게시글 목록 조회 -> /api/articles
-    public List<ResponseArticleListDto> readAllArticles() {
-        List<Article> articleList = articleRepository.findAllByDeletedFalse();
+    public List<ResponseArticleListDto> readAllArticles(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        List<Article> articleList = articleRepository.findAllByUserAndDeletedFalse(user);
 
         log.info("게시글 목록 조회 성공");
         return articleList.stream().map(ResponseArticleListDto::fromEntity).toList();

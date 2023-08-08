@@ -37,8 +37,8 @@ public class ArticleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseArticleListDto>> readAll() {
-        return ResponseEntity.ok(articleService.readAllArticles());
+    public ResponseEntity<List<ResponseArticleListDto>> readAll(@RequestParam("username") String username) {
+        return ResponseEntity.ok(articleService.readAllArticles(username));
     }
 
     @GetMapping("/{articleId}")
