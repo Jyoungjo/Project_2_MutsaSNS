@@ -37,8 +37,8 @@ public class ArticleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseArticleListDto>> readAll() {
-        return ResponseEntity.ok(articleService.readAllArticles());
+    public ResponseEntity<List<ResponseArticleListDto>> readAll(@RequestParam("username") String username) {
+        return ResponseEntity.ok(articleService.readAllArticles(username));
     }
 
     @GetMapping("/{articleId}")
@@ -78,5 +78,21 @@ public class ArticleController {
         articleService.deleteArticle(username, articleId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/followers")
+    public ResponseEntity<List<ResponseArticleListDto>> readAllFollowersArticles(
+            Authentication authentication
+    ) {
+        String username = authentication.getName();
+        return ResponseEntity.ok(articleService.readAllArticlesByFollower(username));
+    }
+
+    @GetMapping("/friends")
+    public ResponseEntity<List<ResponseArticleListDto>> readAllFriendsArticles(
+            Authentication authentication
+    ) {
+        String username = authentication.getName();
+        return ResponseEntity.ok(articleService.readAllArticlesByFriend(username));
     }
 }

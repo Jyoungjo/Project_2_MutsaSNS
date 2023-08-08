@@ -3,7 +3,7 @@ package com.example.mutsasns.domain.user.domain;
 import com.example.mutsasns.domain.article.domain.Article;
 import com.example.mutsasns.domain.comment.domain.Comment;
 import com.example.mutsasns.domain.like_article.domain.LikeArticle;
-import com.example.mutsasns.domain.user.dto.UserUpdateRequestDto;
+import com.example.mutsasns.domain.user.dto.RequestUserUpdateDto;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -28,6 +28,10 @@ public class User {
 
     private String phone;
 
+    private Integer followerCount = 0;
+
+    private Integer followingCount = 0;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Article> articles;
 
@@ -37,8 +41,24 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<LikeArticle> likeArticles;
 
-    public void updateInfo(UserUpdateRequestDto dto) {
+    public void updateInfo(RequestUserUpdateDto dto) {
         this.email = dto.getEmail();
         this.phone = dto.getPhone();
+    }
+
+    public void addFollower() {
+        this.followerCount += 1;
+    }
+
+    public void addFollowing() {
+        this.followingCount += 1;
+    }
+
+    public void cancelFollower() {
+        this.followerCount -= 1;
+    }
+
+    public void cancelFollowing() {
+        this.followingCount -= 1;
     }
 }

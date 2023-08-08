@@ -3,10 +3,10 @@ package com.example.mutsasns.domain.user.service;
 import com.example.mutsasns.domain.user.domain.User;
 import com.example.mutsasns.domain.user.dto.CustomUserDetails;
 import com.example.mutsasns.domain.user.dto.RegisterDto;
-import com.example.mutsasns.domain.user.dto.UserUpdateRequestDto;
+import com.example.mutsasns.domain.user.dto.RequestUserUpdateDto;
+import com.example.mutsasns.domain.user.dto.ResponseUserDto;
 import com.example.mutsasns.domain.user.repository.UserRepository;
 import com.example.mutsasns.global.exception.CustomException;
-import com.example.mutsasns.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static com.example.mutsasns.global.exception.ErrorCode.*;
 
 @Slf4j
 @Service
@@ -29,7 +31,7 @@ public class UserService {
     public void registerUser(RegisterDto dto) {
         if (!dto.getPassword().equals(dto.getPasswordCheck())) {
             log.error("입력 비밀번호 불일치");
-            throw new CustomException(ErrorCode.USER_INCONSISTENT_PASSWORD);
+            throw new CustomException(USER_INCONSISTENT_PASSWORD);
         }
 
         manager.createUser(CustomUserDetails.builder()
@@ -38,22 +40,31 @@ public class UserService {
                 .phone(dto.getPhone())
                 .email(dto.getEmail())
                 .build());
+        log.info("회원가입 성공");
     }
 
-    public void updateUserInfo(Long userId, UserUpdateRequestDto dto, String username) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    public ResponseUserDto readUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+        log.info("유저 정보 조회 성공");
+        return ResponseUserDto.fromEntity(user);
+    }
+
+    public void updateUserInfo(Long userId, RequestUserUpdateDto dto, String username) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         checkAccountForRegister(user, username, dto.getOldPassword());
 
         if (!dto.getNewPassword().equals(dto.getPasswordCheck()))
-            throw new CustomException(ErrorCode.USER_INCONSISTENT_PASSWORD);
+            throw new CustomException(USER_INCONSISTENT_PASSWORD);
 
         user.updateInfo(dto);
         userRepository.save(user);
+        log.info("정보 변경 성공");
     }
 
     public void updateImg(Long userId, MultipartFile image, String username) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
         checkAccount(user, username);
 
@@ -62,7 +73,7 @@ public class UserService {
             Files.createDirectories(Path.of(profileImgDir));
         } catch (IOException e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new CustomException(INTERNAL_SERVER_ERROR);
         }
 
         String originalFilename = image.getOriginalFilename();
@@ -75,11 +86,12 @@ public class UserService {
             image.transferTo(Path.of(profileImagePath));
         } catch (IOException e) {
             log.error(e.getMessage());
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            throw new CustomException(INTERNAL_SERVER_ERROR);
         }
 
         user.setProfileImg(String.format("/static/%d/%s", userId, profileFilename));
         userRepository.save(user);
+        log.info("이미지 등록 성공");
     }
 
     // TODO 회원 탈퇴 기능 구현
@@ -90,7 +102,7 @@ public class UserService {
         // 현재 로그인 한 유저와 프로필 이미지를 등록할 유저의 username 비교
         if (!user.getUsername().equals(username) || !user.getPassword().equals(oldPassword)) {
             log.error("계정 확인 실패");
-            throw new CustomException(ErrorCode.USER_INCONSISTENT_USERNAME_PASSWORD);
+            throw new CustomException(USER_INCONSISTENT_USERNAME_PASSWORD);
         }
     }
 
@@ -99,7 +111,7 @@ public class UserService {
         // 현재 로그인 한 유저와 프로필 이미지를 등록할 유저의 username 비교
         if (!user.getUsername().equals(username)) {
             log.error("계정 확인 실패");
-            throw new CustomException(ErrorCode.USER_INCONSISTENT_USERNAME_PASSWORD);
+            throw new CustomException(USER_INCONSISTENT_USERNAME_PASSWORD);
         }
     }
 }
