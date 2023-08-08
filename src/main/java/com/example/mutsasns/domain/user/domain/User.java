@@ -3,7 +3,7 @@ package com.example.mutsasns.domain.user.domain;
 import com.example.mutsasns.domain.article.domain.Article;
 import com.example.mutsasns.domain.comment.domain.Comment;
 import com.example.mutsasns.domain.like_article.domain.LikeArticle;
-import com.example.mutsasns.domain.user.dto.UserUpdateRequestDto;
+import com.example.mutsasns.domain.user.dto.RequestUserUpdateDto;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -37,7 +37,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<LikeArticle> likeArticles;
 
-    public void updateInfo(UserUpdateRequestDto dto) {
+    public void updateInfo(RequestUserUpdateDto dto) {
         this.email = dto.getEmail();
         this.phone = dto.getPhone();
     }
