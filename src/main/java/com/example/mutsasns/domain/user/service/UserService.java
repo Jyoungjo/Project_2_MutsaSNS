@@ -1,5 +1,6 @@
 package com.example.mutsasns.domain.user.service;
 
+import com.example.mutsasns.domain.images.service.ImageHandler;
 import com.example.mutsasns.domain.user.domain.User;
 import com.example.mutsasns.domain.user.dto.CustomUserDetails;
 import com.example.mutsasns.domain.user.dto.RegisterDto;
@@ -37,6 +38,7 @@ public class UserService {
         manager.createUser(CustomUserDetails.builder()
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
+                .profileImg(ImageHandler.DEFAULT_IMG_PATH)
                 .phone(dto.getPhone())
                 .email(dto.getEmail())
                 .build());
