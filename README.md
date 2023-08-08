@@ -128,9 +128,10 @@ git clone https://github.com/likelion-backend-5th/Project_2_JangYoungjo
 
   ```json
   {
-    "token": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiLslYTsnbTrlJQxIiwiaWF0IjoxNjkxMDc
-                wOTIwLCJleHAiOjE2OTEwNzQ1MjB9.CHDcwSqcPdbEGP_wF61TQljh1XAuQA0jPfONldiFVVEyD4Ta_
-                89YZZ0m6IuPolrgeIISBGE5Ysv5B_nqJWm0-g"
+    "username": "아이디1",
+    "profileImg": "/static/1/profile_1.jpg",
+    "followerCount": 0,
+    "followingCount": 1
   }
   ```
 
